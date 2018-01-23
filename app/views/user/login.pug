@@ -7,7 +7,7 @@ block content
 				.col-md-6.col-md-offset-3.col-lg-4.col-lg-offset-4
 					.card
 						.page-header
-							h1 #{translate("log_in")}
+							h1(style="color:blue;") #{translate("log_in")}
 						form(async-form="login", name="loginForm", action='/login', method="POST", ng-cloak)
 							input(name='_csrf', type='hidden', value=csrfToken)
 							form-messages(for="loginForm")
