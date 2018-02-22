@@ -72,6 +72,38 @@ module.exports = AuthenticationController =
 				res.json message: info
 		)(req, res, next)
 
+###
+	casLogin: (req, res, next) ->
+		passport.authenticate('cas', (err, user, info) ->
+			if err?
+				return next(err)
+			if user
+				redir = AuthenticationController._getRedirectFromSession(req) || "/project"
+				AuthenticationController.afterLoginSessionSetup user, (err) ->
+					if err?
+						return next(err)
+					AuthenticationController._clearRedirectFromSession(req)
+					res.json {redir: redir}
+			else
+				res.json message: info
+		)(req, res, next)
+###
+
+	ldapLogin: (req, res, next) ->
+		passport.authenticate('ldapauth', (err, user, info) ->
+			if err?
+				return next(err)
+			if !user
+				res.json message: info
+			if user
+				redir = AuthenticationController._getRedirectFromSession(req) || "/project"
+				AuthenticationController.afterLoginSessionSetup req, user, (err) ->
+					if err?
+						return next(err)
+					AuthenticationController._clearRedirectFromSession(req)
+					res.json {redir: redir}
+		)(req, res, next)
+
 	doPassportLogin: (req, username, password, done) ->
 		email = username.toLowerCase()
 		LoginRateLimiter.processLoginRequest email, (err, isAllowed)->
@@ -97,6 +129,50 @@ module.exports = AuthenticationController =
 					AuthenticationController._recordFailedLogin()
 					logger.log email: email, "failed log in"
 					return done(null, false, {text: req.i18n.translate("email_or_password_wrong_try_again"), type: 'error'})
+
+###
+	doCasLogin: (profile, done) ->
+		AuthenticationManager.casAuthenticate profile, (error, user) ->
+			return done(error) if error?
+			if user?
+				# async actions
+				UserHandler.setupLoginData(user, ()->)
+				LoginRateLimiter.recordSuccessfulLogin(email)
+				AuthenticationController._recordSuccessfulLogin(user._id)
+				Analytics.recordEvent(user._id, "user-logged-in", {ip:req.ip})
+				Analytics.identifyUser(user._id, req.sessionID)
+				logger.log email: email, user_id: user._id.toString(), "successful log in"
+				req.session.justLoggedIn = true
+				# capture the request ip for use when creating the session
+				user._login_req_ip = req.ip
+				return done(null, user)
+			else
+				AuthenticationController._recordFailedLogin()
+				logger.log email: email, "failed log in"
+				return done(null, false, {text: req.i18n.translate("email_or_password_wrong_try_again"), type: 'error'})
+###
+
+	doLdapLogin: (user, done) ->
+		done null, user
+###
+		logger.log user_id:user._id, "Get in doLdapLogin"
+		AuthenticationManager.ldapAuthenticate user, (error, user) ->
+			return done(error) if error?
+			if user?
+				LoginRateLimiter.recordSuccessfulLogin(user.mail)
+				AuthenticationController._recordSuccessfulLogin(user.uid)
+				Analytics.recordEvent(user.uid, "user-logged-in", {ip:req.ip})
+				Analytics.identifyUser(user.uid, req.sessionID)
+				logger.log email: user.mail, user_id: user.uid, "successful log in"
+				req.session.justLoggedIn = true
+				# capture the request ip for use when creating the session
+				user._login_req_ip = req.ip
+				return done(null, user)
+			else
+				AuthenticationController._recordFailedLogin()
+				logger.log email: user.mail, "failed log in"
+				return done(null, false, {text: req.i18n.translate("email_or_password_wrong_try_again"), type: 'error'})
+###
 
 	setInSessionUser: (req, props) ->
 		for key, value of props

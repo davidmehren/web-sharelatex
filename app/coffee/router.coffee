@@ -51,7 +51,7 @@ logger = require("logger-sharelatex")
 _ = require("underscore")
 
 module.exports = class Router
-	constructor: (webRouter, privateApiRouter, publicApiRouter)->
+	constructor: (webRouter, privateApiRouter, publicApiRouter) ->
 		if !Settings.allowPublicAccess
 			webRouter.all '*', AuthenticationController.requireGlobalLogin
 
@@ -60,6 +60,8 @@ module.exports = class Router
 		AuthenticationController.addEndpointToLoginWhitelist '/login'
 
 		webRouter.post '/login', AuthenticationController.passportLogin
+		webRouter.post '/caslogin', AuthenticationController.casLogin
+		webRouter.post '/ldaplogin', AuthenticationController.ldapLogin
 
 		webRouter.get  '/logout', UserController.logout
 		webRouter.get  '/restricted', AuthorizationMiddlewear.restricted

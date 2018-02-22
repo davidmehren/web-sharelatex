@@ -26,6 +26,8 @@ sessionStore = new RedisStore(client:sessionsRedisClient)
 
 passport = require('passport')
 LocalStrategy = require('passport-local').Strategy
+CasStrategy = require('passport-cas').Strategy
+LdapStrategy = require('passport-ldapauth')
 
 Mongoose = require("./Mongoose")
 
@@ -103,6 +105,37 @@ passport.use(new LocalStrategy(
 	},
 	AuthenticationController.doPassportLogin
 ))
+
+###
+CAS STRATEGY?
+passport.use(new CasStrategy(
+	{
+		version: 'CAS3.0',
+		ssoBaseURL: 'https://192.168.33.10/cas/',
+		serverBaseURL: 'https://localhost/'
+	},
+	AuthenticationController.doCasLogin
+))
+###
+
+###
+LDAP Strategy
+###
+passport.use(new LdapStrategy(
+	{
+		server: {
+			url: 'ldap://localhost:389',
+			bindDN: 'cn=admin,dc=planetexpress,dc=com',
+			bindCredentials: 'GoodNewsEveryone',
+			searchBase: 'ou=people,dc=planetexpress,dc=com',
+			searchFilter: '(uid={{username}})'
+		},
+		usernameField: 'ldapUsername',
+		passwordField: 'ldapPassword'
+	},
+	AuthenticationController.doLdapLogin
+))
+
 passport.serializeUser(AuthenticationController.serializeUser)
 passport.deserializeUser(AuthenticationController.deserializeUser)
 
