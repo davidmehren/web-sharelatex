@@ -4,7 +4,7 @@
   "description": "The HTTP front end for ShareLaTeX",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sharelatex/web-sharelatex.git"
+    "url": "https://github.com/texjs/web-sharelatex.git"
   },
   "directories": {
     "public": "./public"
