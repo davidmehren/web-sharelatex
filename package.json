@@ -35,6 +35,8 @@
     "body-parser": "^1.13.1",
     "bufferedstream": "1.6.0",
     "codemirror": "^5.33.0",
+    "cas-authentication": "^0.0.8",
+    "connect-cas": "^1.8.1",
     "connect-redis": "^3.1.0",
     "contentful": "^6.1.1",
     "cookie": "^0.2.3",
