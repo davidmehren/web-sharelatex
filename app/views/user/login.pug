@@ -4,7 +4,7 @@ block content
 	.content.content-alt
 		.container
 			.row
-				.col-md-6.col-md-offset-3.col-lg-4.col-lg-offset-4
+				.col-md-6.col-lg-4
 					.card
 						.page-header
 							h1 #{translate("log_in")}
@@ -42,12 +42,11 @@ block content
 									span(ng-show="!loginForm.inflight") #{translate("login")}
 									span(ng-show="loginForm.inflight") #{translate("logging_in")}...
 								a.pull-right(href='/user/password/reset') #{translate("forgot_your_password")}?
-			.row
-				.col-md-6.col-md-offset-3.col-lg-4.col-lg-offset-4
+				.col-md-6.col-lg-4
 					.card
 						.page-header
 							h1 CAS Users
-						form(async-form="loginCas", name="loginCasForm", action='/caslogin', method="POST", ng-cloak)
+						form(async-form="caslogin", name="loginCasForm", action='/caslogin', method="POST", ng-cloak)
 							input(name='_csrf', type='hidden', value=csrfToken)
 							form-messages(for="loginCasForm")
 							.actions
@@ -57,12 +56,11 @@ block content
 								)
 									span(ng-show="!loginCasForm.inflight") #{translate("login")}
 									span(ng-show="loginCasForm.inflight") #{translate("logging_in")}...
-			.row
-				.col-md-6.col-md-offset-3.col-lg-4.col-lg-offset-4
+				.col-md-6.col-lg-4
 					.card
 						.page-header
 							h1 LDAP #{translate("log_in")}
-						form(async-form="loginLdap", name="loginLdapForm", action='/ldaplogin', method="POST", ng-cloak)
+						form(async-form="ldaplogin", name="loginLdapForm", action='/ldaplogin', method="POST", ng-cloak)
 							input(name='_csrf', type='hidden', value=csrfToken)
 							form-messages(for="loginLdapForm")
 							.form-group
@@ -84,7 +82,7 @@ block content
 									placeholder='********',
 									ng-model="password"
 								)
-								span.small.text-primary(ng-show="loginLdapForm.password.$invalid && loginLdapForm.password.$dirty")
+								span.small.text-primary(ng-show="loginForm.password.$invalid && loginForm.password.$dirty")
 									| #{translate("required")}
 							.actions
 								button.btn-primary.btn(

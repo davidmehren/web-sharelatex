@@ -187,6 +187,21 @@ module.exports = settings =
 		sessionSecret: sessionSecret
 		bcryptRounds: 12 # number of rounds used to hash user passwords (raised to power 2)
 
+	ldap:
+		server:
+			host: 'ldap://localhost:389'
+			anonymous: false
+			bindDN: 'cn=admin,dc=planetexpress,dc=com'
+			bindCredentials: 'GoodNewsEveryone'
+			searchBase: 'ou=people,dc=planetexpress,dc=com'
+			searchFilter: '(uid={{username}})'
+		emailAtt: 'mail'
+		failMessage: 'LDAP User Fail'
+		fieldName: 'LDAP User'
+		placeholder: 'LDAP User ID'
+		usernameField: 'ldapUsername'
+		passwordField: 'ldapPassword'
+
 	httpAuthUsers: httpAuthUsers
 
 	# Default features
@@ -356,7 +371,7 @@ module.exports = settings =
 
 	appName: "ShareLaTeX (Community Edition)"
 	adminEmail: "placeholder@example.com"
-	
+
 	brandPrefix: "" # Set to 'ol-' for overleaf styles
 
 	nav:

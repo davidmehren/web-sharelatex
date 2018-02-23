@@ -3,6 +3,7 @@ User = require("../../models/User").User
 {db, ObjectId} = require("../../infrastructure/mongojs")
 crypto = require 'crypto'
 bcrypt = require 'bcrypt'
+LdapAuth = require '../Security/LdapAuth'
 
 BCRYPT_ROUNDS = Settings?.security?.bcryptRounds or 12
 
@@ -28,12 +29,13 @@ module.exports = AuthenticationManager =
 			else
 				callback null, null
 
-	ldapAuthenticate: (user, callback = (error, user) ->) ->
+	ldapAuthenticate: (body, callback = (error, user) ->) ->
 		if user?
 			callback null, user
 		else
 			callback null, null
 
+###
 	casAuthenticate: (profile, callback = (error, user) ->) ->
 		User.findOne { login: profile.login }, (error, user) ->
 			if error?
@@ -46,6 +48,7 @@ module.exports = AuthenticationManager =
 			else
 				console.err('Unknown user')
 				callback null, null
+###
 
 	setUserPassword: (user_id, password, callback = (error) ->) ->
 		if (Settings.passwordStrengthOptions?.length?.max? and

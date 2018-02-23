@@ -123,6 +123,7 @@ LDAP Strategy
 ###
 passport.use(new LdapStrategy(
 	{
+		passReqToCallback: true,
 		server: {
 			url: 'ldap://localhost:389',
 			bindDN: 'cn=admin,dc=planetexpress,dc=com',
