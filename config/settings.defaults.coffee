@@ -156,6 +156,10 @@ module.exports = settings =
 			url: process.env['LINKED_URL_PROXY']
 		thirdpartyreferences:
 			url: "http://#{process.env['THIRD_PARTY_REFERENCES_HOST'] or 'localhost'}:3046"
+		v1:
+			url: "http://#{process.env['V1_HOST'] or 'localhost'}:5000"
+			user: 'overleaf'
+			pass: 'password'
 
 	templates:
 		user_id: process.env.TEMPLATES_USER_ID or "5395eb7aad1f29a88756c7f2"
