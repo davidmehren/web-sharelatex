@@ -107,18 +107,6 @@ passport.use(new LocalStrategy(
 ))
 
 ###
-CAS STRATEGY?
-passport.use(new CasStrategy(
-	{
-		version: 'CAS3.0',
-		ssoBaseURL: 'https://192.168.33.10/cas/',
-		serverBaseURL: 'https://localhost/'
-	},
-	AuthenticationController.doCasLogin
-))
-###
-
-###
 LDAP Strategy
 ###
 passport.use(new LdapStrategy(

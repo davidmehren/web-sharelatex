@@ -189,7 +189,7 @@ module.exports = settings =
 
 	ldap:
 		server:
-			host: 'ldap://localhost:389'
+			url: 'ldap://localhost:389'
 			anonymous: false
 			bindDN: 'cn=admin,dc=planetexpress,dc=com'
 			bindCredentials: 'GoodNewsEveryone'
@@ -331,7 +331,7 @@ module.exports = settings =
 
 	# Should we allow access to any page without logging in? This includes
 	# public projects, /learn, /templates, about pages, etc.
-	allowPublicAccess: if process.env["SHARELATEX_ALLOW_PUBLIC_ACCESS"] == 'true' then true else false
+	allowPublicAccess: if process.env["SHARELATEX_ALLOW_PUBLIC_ACCESS"] == 'true' then true else true
 
 	# Use a single compile directory for all users in a project
 	# (otherwise each user has their own directory)

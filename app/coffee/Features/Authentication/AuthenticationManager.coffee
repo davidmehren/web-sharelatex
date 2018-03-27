@@ -30,25 +30,7 @@ module.exports = AuthenticationManager =
 				callback null, null
 
 	ldapAuthenticate: (body, callback = (error, user) ->) ->
-		if user?
-			callback null, user
-		else
-			callback null, null
-
-###
-	casAuthenticate: (profile, callback = (error, user) ->) ->
-		User.findOne { login: profile.login }, (error, user) ->
-			if error?
-				console.err(error)
-				return callback(error)
-			if user?
-				console.err(user)
-				user.attributes = profile.attributes
-				callback null, user
-			else
-				console.err('Unknown user')
-				callback null, null
-###
+		callback null, user
 
 	setUserPassword: (user_id, password, callback = (error) ->) ->
 		if (Settings.passwordStrengthOptions?.length?.max? and

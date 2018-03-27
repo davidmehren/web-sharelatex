@@ -3,7 +3,7 @@ LoginRateLimiter = require("../Security/LoginRateLimiter")
 UserGetter = require "../User/UserGetter"
 UserUpdater = require "../User/UserUpdater"
 Metrics = require('metrics-sharelatex')
-logger = require("logger-sharelatex")
+logger = require 'logger-sharelatex'
 querystring = require('querystring')
 Url = require("url")
 Settings = require "settings-sharelatex"
@@ -13,6 +13,7 @@ UserSessionsManager = require("../User/UserSessionsManager")
 Analytics = require "../Analytics/AnalyticsManager"
 passport = require 'passport'
 LdapAuth = require("../Security/LdapAuth")
+CasAuthentication = require('cas-authentication');
 
 module.exports = AuthenticationController =
 
@@ -73,30 +74,15 @@ module.exports = AuthenticationController =
 				res.json message: info
 		)(req, res, next)
 
-###
-	casLogin: (req, res, next) ->
-		passport.authenticate('cas', (err, user, info) ->
-			if err?
-				return next(err)
-			if user
-				redir = AuthenticationController._getRedirectFromSession(req) || "/project"
-				AuthenticationController.afterLoginSessionSetup user, (err) ->
-					if err?
-						return next(err)
-					AuthenticationController._clearRedirectFromSession(req)
-					res.json {redir: redir}
-			else
-				res.json message: info
-		)(req, res, next)
-###
-
 	ldapLogin: (req, res, next) ->
 		passport.authenticate('ldapauth', { session: false }, (err, user, info) ->
+			logger.info "user: #{user}"
 			if err?
 				return next(err)
 			if !user
 				res.send { success: true, message: info }
 			if user
+				res.json {user: user}
 				redir = AuthenticationController._getRedirectFromSession(req) || "/project"
 				###
 				AuthenticationController.afterLoginSessionSetup req, user, (err) ->
@@ -134,30 +120,9 @@ module.exports = AuthenticationController =
 					logger.log email: email, "failed log in"
 					return done(null, false, {text: req.i18n.translate("email_or_password_wrong_try_again"), type: 'error'})
 
-###
-	doCasLogin: (profile, done) ->
-		AuthenticationManager.casAuthenticate profile, (error, user) ->
-			return done(error) if error?
-			if user?
-				# async actions
-				UserHandler.setupLoginData(user, ()->)
-				LoginRateLimiter.recordSuccessfulLogin(email)
-				AuthenticationController._recordSuccessfulLogin(user._id)
-				Analytics.recordEvent(user._id, "user-logged-in", {ip:req.ip})
-				Analytics.identifyUser(user._id, req.sessionID)
-				logger.log email: email, user_id: user._id.toString(), "successful log in"
-				req.session.justLoggedIn = true
-				# capture the request ip for use when creating the session
-				user._login_req_ip = req.ip
-				return done(null, user)
-			else
-				AuthenticationController._recordFailedLogin()
-				logger.log email: email, "failed log in"
-				return done(null, false, {text: req.i18n.translate("email_or_password_wrong_try_again"), type: 'error'})
-###
-
 	doLdapLogin: (req, user, done) ->
-		email = user.toLowerCase()
+		logger.info "user : #{user}"
+		return done null user
 		LoginRateLimiter.processLoginRequest email, (err, isAllowed) ->
 			return done(err) if err?
 			if !isAllowed
@@ -241,6 +206,7 @@ module.exports = AuthenticationController =
 		AuthenticationController._globalLoginWhitelist.push endpoint
 
 	requireGlobalLogin: (req, res, next) ->
+		logger.log url:req.url, msg:"TRYING"
 		if req._parsedUrl.pathname in AuthenticationController._globalLoginWhitelist
 			return next()
 
