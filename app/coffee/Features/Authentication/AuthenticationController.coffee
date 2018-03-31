@@ -12,8 +12,6 @@ UserHandler = require("../User/UserHandler")
 UserSessionsManager = require("../User/UserSessionsManager")
 Analytics = require "../Analytics/AnalyticsManager"
 passport = require 'passport'
-LdapAuth = require("../Security/LdapAuth")
-CasAuthentication = require('cas-authentication');
 
 module.exports = AuthenticationController =
 
@@ -75,7 +73,7 @@ module.exports = AuthenticationController =
 		)(req, res, next)
 
 	ldapLogin: (req, res, next) ->
-		passport.authenticate('ldapauth', { session: false }, (err, user, info) ->
+		passport.authenticate('ldapauth', (err, user, info) ->
 			logger.info "user: #{user}"
 			if err?
 				return next(err)
@@ -84,13 +82,6 @@ module.exports = AuthenticationController =
 			if user
 				res.json {user: user}
 				redir = AuthenticationController._getRedirectFromSession(req) || "/project"
-				###
-				AuthenticationController.afterLoginSessionSetup req, user, (err) ->
-					if err?
-						return next(err)
-					AuthenticationController._clearRedirectFromSession(req)
-					res.json {redir: redir}
-				###
 				res.send { success: true, message: 'authentication succeeded' }
 		)(req, res, next)
 
@@ -122,7 +113,7 @@ module.exports = AuthenticationController =
 
 	doLdapLogin: (req, user, done) ->
 		logger.info "user : #{user}"
-		return done null user
+		return done null, user
 		LoginRateLimiter.processLoginRequest email, (err, isAllowed) ->
 			return done(err) if err?
 			if !isAllowed
@@ -144,25 +135,6 @@ module.exports = AuthenticationController =
 					AuthenticationController._recordFailedLogin()
 					logger.log email:email, "failed log in"
 					return done(null, false, {text: req.i18n.translate("email_or_password_wrong_try_again"), type: 'error'})
-###
-		logger.log user_id:user._id, "Get in doLdapLogin"
-		AuthenticationManager.ldapAuthenticate user, (error, user) ->
-			return done(error) if error?
-			if user?
-				LoginRateLimiter.recordSuccessfulLogin(user.mail)
-				AuthenticationController._recordSuccessfulLogin(user.uid)
-				Analytics.recordEvent(user.uid, "user-logged-in", {ip:req.ip})
-				Analytics.identifyUser(user.uid, req.sessionID)
-				logger.log email: user.mail, user_id: user.uid, "successful log in"
-				req.session.justLoggedIn = true
-				# capture the request ip for use when creating the session
-				user._login_req_ip = req.ip
-				return done(null, user)
-			else
-				AuthenticationController._recordFailedLogin()
-				logger.log email: user.mail, "failed log in"
-				return done(null, false, {text: req.i18n.translate("email_or_password_wrong_try_again"), type: 'error'})
-###
 
 	setInSessionUser: (req, props) ->
 		for key, value of props
@@ -227,8 +199,8 @@ module.exports = AuthenticationController =
 
 	_redirectToLoginOrRegisterPage: (req, res)->
 		if (req.query.zipUrl? or
-			  req.query.project_name? or
-			  req.path == '/user/subscription/new')
+				req.query.project_name? or
+				req.path == '/user/subscription/new')
 			return AuthenticationController._redirectToRegisterPage(req, res)
 		else
 			AuthenticationController._redirectToLoginPage(req, res)

@@ -58,7 +58,7 @@ module.exports = class Router
 
 		webRouter.get  '/login', UserPagesController.loginPage
 		AuthenticationController.addEndpointToLoginWhitelist '/login'
-		webRouter.get '/ldaplogin', UserPagesController.loginPage
+		webRouter.get  '/ldaplogin', UserPagesController.loginPage
 		AuthenticationController.addEndpointToLoginWhitelist '/ldaplogin'
 
 		webRouter.post '/login', AuthenticationController.passportLogin

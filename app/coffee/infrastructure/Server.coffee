@@ -26,7 +26,6 @@ sessionStore = new RedisStore(client:sessionsRedisClient)
 
 passport = require('passport')
 LocalStrategy = require('passport-local').Strategy
-CasStrategy = require('passport-cas').Strategy
 LdapStrategy = require('passport-ldapauth')
 
 Mongoose = require("./Mongoose")
