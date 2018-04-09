@@ -3,7 +3,6 @@ User = require("../../models/User").User
 {db, ObjectId} = require("../../infrastructure/mongojs")
 crypto = require 'crypto'
 bcrypt = require 'bcrypt'
-LdapAuth = require '../Security/LdapAuth'
 
 BCRYPT_ROUNDS = Settings?.security?.bcryptRounds or 12
 
