@@ -110,16 +110,16 @@ LDAP Strategy
 ###
 passport.use(new LdapStrategy(
 	{
-		passReqToCallback: true,
 		server: {
-			url: 'ldap://localhost:389',
-			bindDN: 'cn=admin,dc=planetexpress,dc=com',
+			url: 'ldap://openldap:389',
+			bindDn: 'cn=admin,dc=planetexpress,dc=com',
 			bindCredentials: 'GoodNewsEveryone',
 			searchBase: 'ou=people,dc=planetexpress,dc=com',
 			searchFilter: '(uid={{username}})'
 		},
 		usernameField: 'ldapUsername',
-		passwordField: 'ldapPassword'
+		passwordField: 'ldapPassword',
+		passReqToCallback: true
 	},
 	AuthenticationController.doLdapLogin
 ))

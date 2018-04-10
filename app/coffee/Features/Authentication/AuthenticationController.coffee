@@ -73,16 +73,21 @@ module.exports = AuthenticationController =
 		)(req, res, next)
 
 	ldapLogin: (req, res, next) ->
+		logger.info "ldapLogin Function Start"
 		passport.authenticate('ldapauth', (err, user, info) ->
 			logger.info "user: #{user}"
 			if err?
 				return next(err)
-			if !user
-				res.send { success: true, message: info }
 			if user
 				res.json {user: user}
-				redir = AuthenticationController._getRedirectFromSession(req) || "/project"
-				res.send { success: true, message: 'authentication succeeded' }
+				# redir = AuthenticationController._getRedirectFromSession(req) || "/project"
+				# AuthenticationController.afterLoginSessionSetup req, user, (err) ->
+				# 	if err?
+				# 		return next(err)
+				# 	AuthenticationController._clearRedirectFromSession(req)
+				# 	res.json {user: user}
+			else
+				res.json message: info
 		)(req, res, next)
 
 	doPassportLogin: (req, username, password, done) ->
@@ -112,14 +117,14 @@ module.exports = AuthenticationController =
 					return done(null, false, {text: req.i18n.translate("email_or_password_wrong_try_again"), type: 'error'})
 
 	doLdapLogin: (req, user, done) ->
-		logger.info "user : #{user}"
+		logger.info "Trying ldap user doLdapLogin"
 		return done null, user
-		LoginRateLimiter.processLoginRequest email, (err, isAllowed) ->
+		LoginRateLimiter.processLoginRequest user.mail, (err, isAllowed) ->
 			return done(err) if err?
 			if !isAllowed
 				logger.log email:email, 'too many login requests'
 				return done null, null, {text: req.i18n.translate("to_many_login_requests_2_mins"), type: 'error'}
-			AuthenticationManager.ldapAuthenticate req.body, (error, user) ->
+			AuthenticationManager.ldapAuthenticate email: user.mail, user.userPassword, (error, user) ->
 				return done(error) if error?
 				if user?
 					UserHandler.setupLoginData(user, ()->)
