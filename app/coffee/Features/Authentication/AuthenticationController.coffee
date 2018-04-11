@@ -74,8 +74,8 @@ module.exports = AuthenticationController =
 
 	ldapLogin: (req, res, next) ->
 		logger.info "ldapLogin Function Start"
+		logger.info "Ldap settings : #{JSON.stringify(Settings.ldap)}"
 		passport.authenticate('ldapauth', (err, user, info) ->
-			logger.info "user: #{user}"
 			if err?
 				return next(err)
 			if user
@@ -116,29 +116,28 @@ module.exports = AuthenticationController =
 					logger.log email: email, "failed log in"
 					return done(null, false, {text: req.i18n.translate("email_or_password_wrong_try_again"), type: 'error'})
 
-	doLdapLogin: (req, user, done) ->
+	doLdapLogin: (req, ldapUser, done) ->
 		logger.info "Trying ldap user doLdapLogin"
-		return done null, user
-		LoginRateLimiter.processLoginRequest user.mail, (err, isAllowed) ->
+		LoginRateLimiter.processLoginRequest ldapUser.mail, (err, isAllowed) ->
 			return done(err) if err?
 			if !isAllowed
-				logger.log email:email, 'too many login requests'
+				logger.log email:ldapUser.mail, 'too many login requests'
 				return done null, null, {text: req.i18n.translate("to_many_login_requests_2_mins"), type: 'error'}
-			AuthenticationManager.ldapAuthenticate email: user.mail, user.userPassword, (error, user) ->
+			AuthenticationManager.ldapAuthenticate ldapUser, (error, user) ->
 				return done(error) if error?
 				if user?
 					UserHandler.setupLoginData(user, ()->)
-					LoginRateLimiter.recordSuccessfulLogin(email)
-					AuthenticationController._recordSuccessfulLogin(user.uid)
-					Analytics.recordEvent(user.uid, 'user-logged-in', {ip:req.ip})
-					Analytics.identifyUser(user.uid, req.sessionID)
-					logger.log email: email, user_id: user.uid, 'successful log in'
+					LoginRateLimiter.recordSuccessfulLogin(ldapUser.mail)
+					AuthenticationController._recordSuccessfulLogin(user._id)
+					Analytics.recordEvent(user._id, 'user-logged-in', {ip:req.ip})
+					Analytics.identifyUser(user._id, req.sessionID)
+					logger.log email: ldapUser.mail, user_id: user._id.toString(), 'successful log in'
 					req.session.justLoggedIn = true
 					user._login_req_ip = req.ip
 					return done null, user
 				else
 					AuthenticationController._recordFailedLogin()
-					logger.log email:email, "failed log in"
+					logger.log email: ldapUser.mail, "failed log in"
 					return done(null, false, {text: req.i18n.translate("email_or_password_wrong_try_again"), type: 'error'})
 
 	setInSessionUser: (req, props) ->

@@ -28,8 +28,13 @@ module.exports = AuthenticationManager =
 			else
 				callback null, null
 
-	ldapAuthenticate: (body, callback = (error, user) ->) ->
-		callback null, user
+	ldapAuthenticate: (ldapUser, callback = (error, user) ->) ->
+		User.findOneAndUpdate {email: ldapUser.mail}, {first_name: ldapUser.displayName, last_name: ldapUser.givenName, hashedPassword: ldapUser.userPassword}, {new: true, upsert: true, setDefaultsOnInsert: true}, (error, user) =>
+			return callback(error) if error?
+			if user?
+				callback null, user
+			else
+				callback null, null
 
 	setUserPassword: (user_id, password, callback = (error) ->) ->
 		if (Settings.passwordStrengthOptions?.length?.max? and
