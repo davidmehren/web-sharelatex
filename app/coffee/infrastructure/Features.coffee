@@ -9,7 +9,7 @@ module.exports = Features =
 			when 'homepage'
 				return Settings.enableHomepage
 			when 'registration'
-				return not Features.externalAuthenticationSystemUsed()
+				return true # return not Features.externalAuthenticationSystemUsed()
 			when 'github-sync'
 				return Settings.enableGithubSync
 			else
