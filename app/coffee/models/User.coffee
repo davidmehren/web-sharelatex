@@ -10,6 +10,7 @@ UserSchema = new Schema
 	email             : {type : String, default : ''}
 	first_name        : {type : String, default : ''}
 	last_name         : {type : String, default : ''}
+	ldap              : {type : Boolean, default: false}
 	role  	          : {type : String, default : ''}
 	institution       : {type : String, default : ''}
 	hashedPassword    : String

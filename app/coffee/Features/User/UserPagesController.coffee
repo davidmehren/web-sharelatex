@@ -63,6 +63,7 @@ module.exports =
 		shouldAllowEditingDetails = !(Settings?.ldap?.updateUserDetailsOnLogin) and !(Settings?.saml?.updateUserDetailsOnLogin)
 		UserLocator.findById user_id, (err, user)->
 			return next(err) if err?
+			shouldAllowEditingDetails = !user.ldap or shouldAllowEditingDetails
 			res.render 'user/settings',
 				title:'account_settings'
 				user: user,

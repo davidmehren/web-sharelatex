@@ -73,19 +73,16 @@ module.exports = AuthenticationController =
 		)(req, res, next)
 
 	ldapLogin: (req, res, next) ->
-		logger.info "ldapLogin Function Start"
-		logger.info "Ldap settings : #{JSON.stringify(Settings.ldap)}"
 		passport.authenticate('ldapauth', (err, user, info) ->
 			if err?
 				return next(err)
 			if user
-				res.json {user: user}
-				# redir = AuthenticationController._getRedirectFromSession(req) || "/project"
-				# AuthenticationController.afterLoginSessionSetup req, user, (err) ->
-				# 	if err?
-				# 		return next(err)
-				# 	AuthenticationController._clearRedirectFromSession(req)
-				# 	res.json {user: user}
+				redir = AuthenticationController._getRedirectFromSession(req) || "/project"
+				AuthenticationController.afterLoginSessionSetup req, user, (err) ->
+					if err?
+						return next(err)
+					AuthenticationController._clearRedirectFromSession(req)
+					res.json {redir: redir}
 			else
 				res.json message: info
 		)(req, res, next)
@@ -117,7 +114,6 @@ module.exports = AuthenticationController =
 					return done(null, false, {text: req.i18n.translate("email_or_password_wrong_try_again"), type: 'error'})
 
 	doLdapLogin: (req, ldapUser, done) ->
-		logger.info "Trying ldap user doLdapLogin"
 		LoginRateLimiter.processLoginRequest ldapUser.mail, (err, isAllowed) ->
 			return done(err) if err?
 			if !isAllowed

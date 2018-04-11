@@ -19,7 +19,7 @@ block content
 										h3  #{translate("update_account_info")}
 										form(async-form="settings", name="settingsForm", method="POST", action="/user/settings", novalidate)
 											input(type="hidden", name="_csrf", value=csrfToken)
-											if !externalAuthenticationSystemUsed()
+											if !user.ldap
 												.form-group
 													label(for='email')  #{translate("email")}
 													input.form-control(
@@ -69,7 +69,7 @@ block content
 													label.control-label #{translate("last_name")}
 													div.form-control(readonly="true") #{user.last_name}
 
-									if !externalAuthenticationSystemUsed()
+									if !user.ldap
 										.col-md-5.col-md-offset-1
 											h3  #{translate("change_password")}
 											form(async-form="changepassword", name="changePasswordForm", action="/user/password/update", method="POST", novalidate)
