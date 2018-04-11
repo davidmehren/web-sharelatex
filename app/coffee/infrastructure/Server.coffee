@@ -111,14 +111,14 @@ LDAP Strategy
 passport.use(new LdapStrategy(
 	{
 		server: {
-			url: 'ldap://openldap:389',
-			bindDn: 'cn=admin,dc=planetexpress,dc=com',
-			bindCredentials: 'GoodNewsEveryone',
-			searchBase: 'ou=people,dc=planetexpress,dc=com',
-			searchFilter: '(uid={{username}})'
+			url: Settings.ldap.server.url,
+			bindDn: Settings.ldap.server.bindDn,
+			bindCredentials: Settings.ldap.server.bindCredentials,
+			searchBase: Settings.ldap.server.searchBase,
+			searchFilter: Settings.ldap.server.searchFilter
 		},
-		usernameField: 'ldapUsername',
-		passwordField: 'ldapPassword',
+		usernameField: Settings.ldap.usernameField,
+		passwordField: Settings.ldap.passwordField,
 		passReqToCallback: true
 	},
 	AuthenticationController.doLdapLogin
