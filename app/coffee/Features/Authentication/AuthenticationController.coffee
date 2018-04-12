@@ -84,7 +84,7 @@ module.exports = AuthenticationController =
 					AuthenticationController._clearRedirectFromSession(req)
 					res.json {redir: redir}
 			else
-				res.json message: info
+				res.json message: {text: info.message, type: "error"}
 		)(req, res, next)
 
 	doPassportLogin: (req, username, password, done) ->
