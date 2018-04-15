@@ -105,7 +105,7 @@ passport.use(new LocalStrategy(
 	AuthenticationController.doPassportLogin
 ))
 
-getLDAPConfiguration: (req, callback) ->
+getLDAPConfiguration = (req, callback) ->
 	process.nextTick(() ->
 		opts = {
 			server: {
