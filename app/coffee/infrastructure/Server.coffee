@@ -105,22 +105,28 @@ passport.use(new LocalStrategy(
 	AuthenticationController.doPassportLogin
 ))
 
+getLDAPConfiguration: (req, callback) ->
+	process.nextTick(() ->
+		opts = {
+			server: {
+				url: Settings.ldap.server.url
+				bindDn: Settings.ldap.server.bindDn.replace(/{{username}}/g, req.body.ldapUsername)
+				bindCredentials: Settings.ldap.server.bindCredentials || req.body.ldapPassword
+				searchBase: Settings.ldap.server.searchBase
+				searchFilter: Settings.ldap.server.searchFilter
+			}
+			usernameField: 'ldapUsername'
+			passwordField: 'ldapPassword'
+			passReqToCallback: true
+		}
+		callback null, opts
+	)
+
 ###
 LDAP Strategy
 ###
 passport.use(new LdapStrategy(
-	{
-		server: {
-			url: Settings.ldap.server.url,
-			bindDn: Settings.ldap.server.bindDn,
-			bindCredentials: Settings.ldap.server.bindCredentials,
-			searchBase: Settings.ldap.server.searchBase,
-			searchFilter: Settings.ldap.server.searchFilter
-		},
-		usernameField: Settings.ldap.usernameField,
-		passwordField: Settings.ldap.passwordField,
-		passReqToCallback: true
-	},
+	getLDAPConfiguration,
 	AuthenticationController.doLdapLogin
 ))
 
