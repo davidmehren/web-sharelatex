@@ -111,7 +111,7 @@ getLDAPConfiguration = (req, callback) ->
 			server: {
 				url: Settings.ldap.server.url
 				bindDn: Settings.ldap.server.bindDn.replace(/{{username}}/g, req.body.ldapUsername)
-				bindCredentials: Settings.ldap.server.bindCredentials || req.body.ldapPassword
+				bindCredentials: Settings.ldap.server.bindCredentials.replace(/{{password}}/g, req.body.ldapPassword)
 				searchBase: Settings.ldap.server.searchBase
 				searchFilter: Settings.ldap.server.searchFilter
 			}
