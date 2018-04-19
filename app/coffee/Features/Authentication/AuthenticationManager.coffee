@@ -3,7 +3,6 @@ User = require("../../models/User").User
 {db, ObjectId} = require("../../infrastructure/mongojs")
 crypto = require 'crypto'
 bcrypt = require 'bcrypt'
-logger = require 'logger-sharelatex'
 
 BCRYPT_ROUNDS = Settings?.security?.bcryptRounds or 12
 
@@ -30,8 +29,7 @@ module.exports = AuthenticationManager =
 				callback null, null
 
 	ldapAuthenticate: (ldapUser, callback = (error, user) ->) ->
-		logger.info "Settings : #{JSON.stringify(Settings)}"
-		User.findOneAndUpdate {email: eval('ldapUser.mail')}, {first_name: eval('ldapUser.sn'), last_name: ldapUser.givenName, hashedPassword: ldapUser.userPassword, ldap: true}, {new: true, upsert: true, setDefaultsOnInsert: true}, (error, user) =>
+		User.findOneAndUpdate {email: eval('ldapUser.' + Settings.ldap.emailAtt)}, {first_name: eval('ldapUser.' + Settings.ldap.nameAtt), last_name: eval('ldapUser.' + Settings.ldap.lastNameAtt), hashedPassword: ldapUser.userPassword, ldap: true}, {new: true, upsert: true, setDefaultsOnInsert: true}, (error, user) =>
 			return callback(error) if error?
 			if user?
 				callback null, user
