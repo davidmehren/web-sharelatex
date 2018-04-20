@@ -111,7 +111,7 @@ getLDAPConfiguration = (req, callback) ->
 			server: {
 				url: Settings.ldap.server.url
 				bindDn: Settings.ldap.server.bindDn.replace(/{{username}}/g, req.body.ldapUsername)
-				bindCredentials: Settings.ldap.server.bindCredentials.replace(/{{password}}/g, req.body.ldapPassword)
+				bindCredentials: Settings.ldap.server.bindCredentials.replace(/{{password}}/g, req.body.ldapPassword.replace('$$', '$$$$'))
 				searchBase: Settings.ldap.server.searchBase
 				searchFilter: Settings.ldap.server.searchFilter
 			}
@@ -119,7 +119,6 @@ getLDAPConfiguration = (req, callback) ->
 			passwordField: 'ldapPassword'
 			passReqToCallback: true
 		}
-		logger.info "cred : #{server.bindCredentials}"
 		callback null, opts
 	)
 
