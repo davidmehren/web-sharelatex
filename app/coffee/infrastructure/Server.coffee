@@ -119,6 +119,7 @@ getLDAPConfiguration = (req, callback) ->
 			passwordField: 'ldapPassword'
 			passReqToCallback: true
 		}
+		logger.info "cred : #{server.bindCredentials}"
 		callback null, opts
 	)
 
