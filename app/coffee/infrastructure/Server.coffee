@@ -107,11 +107,13 @@ passport.use(new LocalStrategy(
 
 getLDAPConfiguration = (req, callback) ->
 	process.nextTick(() ->
+		password = Settings.ldap.server.bindCredentials
+		password = req.body.ldapPassword if Settings.ldap.server.bindCredentials == "{{password}}"
 		opts = {
 			server: {
 				url: Settings.ldap.server.url
 				bindDn: Settings.ldap.server.bindDn.replace(/{{username}}/g, req.body.ldapUsername)
-				bindCredentials: Settings.ldap.server.bindCredentials.replace(/{{password}}/g, req.body.ldapPassword.replace('$$', '$$$$'))
+				bindCredentials: password
 				searchBase: Settings.ldap.server.searchBase
 				searchFilter: Settings.ldap.server.searchFilter
 			}
