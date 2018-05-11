@@ -62,6 +62,15 @@ module.exports = {
 					cacheDirectory: true
 				}
 			}]
+		},
+		{
+			test: /\.handlebars$/,
+			loader: "handlebars-loader",
+			options: {
+				compat: true,
+				knownHelpersOnly: false,
+				runtimePath: 'handlebars/runtime',
+			}
 		}]
 	},
 
@@ -75,6 +84,13 @@ module.exports = {
 				NODE_ENV: JSON.stringify(webpackENV)
 			},
 		})
-	]
+	],
+	resolve: {
+		alias: {
+			handlebars: 'handlebars/dist/handlebars.min.js',
+			jquery: path.join(__dirname, 'node_modules/jquery/dist/jquery'),
+		}
+	},
+	// TODO
+	// plugins: {}
 }
-
