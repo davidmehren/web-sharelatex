@@ -1,6 +1,5 @@
 const fs = require('fs')
 const path = require('path')
-const webpack = require('webpack')
 
 const MODULES_PATH = path.join(__dirname, '/modules')
 const webpackENV = process.env.WEBPACK_ENV || 'development'
@@ -64,6 +63,8 @@ module.exports = {
 			}]
 		},
 		{
+			// These options are necesary for handlebars to have access to helper
+			// methods
 			test: /\.handlebars$/,
 			loader: "handlebars-loader",
 			options: {
@@ -87,6 +88,7 @@ module.exports = {
 	],
 	resolve: {
 		alias: {
+			// makes handlerbars globally accessible to backbone
 			handlebars: 'handlebars/dist/handlebars.min.js',
 			jquery: path.join(__dirname, 'node_modules/jquery/dist/jquery'),
 		}
