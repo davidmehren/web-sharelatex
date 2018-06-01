@@ -19,7 +19,7 @@ describe "SubscriptionGroupHandler", ->
 			admin_id:@adminUser_id
 			_id:@subscription_id
 
-		@SubscriptionLocator = 
+		@SubscriptionLocator =
 			getUsersSubscription: sinon.stub()
 			getSubscriptionByMemberIdAndId: sinon.stub()
 			getSubscription: sinon.stub()
@@ -44,7 +44,7 @@ describe "SubscriptionGroupHandler", ->
 		@EmailHandler =
 			sendEmail:sinon.stub()
 
-		@settings = 
+		@settings =
 			siteUrl:"http://www.sharelatex.com"
 
 		@readStub = sinon.stub()
@@ -62,7 +62,7 @@ describe "SubscriptionGroupHandler", ->
 			"../Email/EmailHandler":@EmailHandler
 			"settings-sharelatex":@settings
 			"../Notifications/NotificationsBuilder": @NotificationsBuilder
-			"logger-sharelatex": 
+			"logger-sharelatex":
 				err:->
 				log:->
 				warn:->
@@ -72,7 +72,7 @@ describe "SubscriptionGroupHandler", ->
 		beforeEach ->
 			@LimitationsManager.hasGroupMembersLimitReached.callsArgWith(1, null, false, @subscription)
 			@UserGetter.getUserByMainEmail.callsArgWith(1, null, @user)
-			
+
 		it "should find the user", (done)->
 			@Handler.addUserToGroup @adminUser_id, @newEmail, (err)=>
 				@UserGetter.getUserByMainEmail.calledWith(@newEmail).should.equal true
@@ -82,7 +82,7 @@ describe "SubscriptionGroupHandler", ->
 			@Handler.addUserToGroup @adminUser_id, @newEmail, (err)=>
 				@SubscriptionUpdater.addUserToGroup.calledWith(@adminUser_id, @user._id).should.equal true
 				done()
-				
+
 		it "should not add the user to the group if the limit has been reached", (done)->
 			@LimitationsManager.hasGroupMembersLimitReached.callsArgWith(1, null, true, @subscription)
 			@Handler.addUserToGroup @adminUser_id, @newEmail, (err)=>
@@ -100,7 +100,7 @@ describe "SubscriptionGroupHandler", ->
 				@NotificationsBuilder.groupPlan.calledWith(@user, {subscription_id:@subscription._id}).should.equal true
 				@readStub.called.should.equal true
 				done()
-		
+
 		it "should add an email invite if no user is found", (done) ->
 			@UserGetter.getUserByMainEmail.callsArgWith(1, null, null)
 			@Handler.addUserToGroup @adminUser_id, @newEmail, (err)=>
@@ -145,7 +145,7 @@ describe "SubscriptionGroupHandler", ->
 				assert.deepEqual users[1], {_id:@subscription.member_ids[1]}
 				assert.deepEqual users[2], {_id:@subscription.member_ids[2]}
 				done()
-		
+
 		it "should return any invited users", (done) ->
 			@subscription.invited_emails = ["jo@example.com", "charlie@example.com"]
 			@Handler.getPopulatedListOfMembers @adminUser_id, (err, users)=>
@@ -216,7 +216,7 @@ describe "SubscriptionGroupHandler", ->
 			@Handler.convertEmailInvitesToMemberships @email, @user_id, (err) =>
 				@SubscriptionLocator.getGroupsWithEmailInvite.calledWith(@email).should.equal true
 				done()
-		
+
 		it "should remove the email from each group", (done) ->
 			@Handler.convertEmailInvitesToMemberships @email, @user_id, (err) =>
 				for group in @groups
@@ -224,7 +224,7 @@ describe "SubscriptionGroupHandler", ->
 						.calledWith(group.admin_id, @email)
 						.should.equal true
 				done()
-		
+
 		it "should add the user to each group", (done) ->
 			@Handler.convertEmailInvitesToMemberships @email, @user_id, (err) =>
 				for group in @groups
