@@ -40,10 +40,6 @@ module.exports = SubscriptionGroupHandler =
 	removeUserFromGroup: (adminUser_id, userToRemove_id, callback)->
 		SubscriptionUpdater.removeUserFromGroup adminUser_id, userToRemove_id, callback
 
-	removeEmailInviteFromGroup: (adminUser_id, email, callback) ->
-		SubscriptionUpdater.removeEmailInviteFromGroup adminUser_id, email, callback
-
-
 	replaceUserReferencesInGroups: (oldId, newId, callback) ->
 		Subscription.update {admin_id: userStubId}, {admin_id: slUserId}, (error) ->
 			callback(error) if error?
