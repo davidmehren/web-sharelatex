@@ -200,9 +200,9 @@ module.exports = settings =
 		server:
 			url: 'ldap://localhost:389'
 			anonymous: false
-			bindDN: 'cn=admin,dc=planetexpress,dc=com'
-			bindCredentials: 'GoodNewsEveryone'
-			searchBase: 'ou=people,dc=planetexpress,dc=com'
+			bindDn: 'cn=admin,dc=example,dc=org'
+			bindCredentials: 'admin'
+			searchBase: 'dc=example,dc=org'
 			searchFilter: '(uid={{username}})'
 		emailAtt: 'mail'
 		failMessage: 'LDAP User Fail'
@@ -210,6 +210,7 @@ module.exports = settings =
 		placeholder: 'LDAP User ID'
 		usernameField: 'ldapUsername'
 		passwordField: 'ldapPassword'
+
 
 	httpAuthUsers: httpAuthUsers
 
