@@ -65,6 +65,7 @@ module.exports = class Router
 
 		webRouter.post '/login', AuthenticationController.passportLogin
 		webRouter.post '/ldaplogin', AuthenticationController.ldapLogin
+		AuthenticationController.addEndpointToLoginWhitelist '/ldaplogin'
 
 		webRouter.get  '/logout', UserController.logout
 		webRouter.get  '/restricted', AuthorizationMiddlewear.restricted
