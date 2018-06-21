@@ -210,6 +210,8 @@ module.exports = settings =
 		placeholder: 'LDAP User ID'
 		usernameField: 'ldapUsername'
 		passwordField: 'ldapPassword'
+		nameAtt: 'givenName'
+		lastNameAtt: 'sn'
 
 
 	httpAuthUsers: httpAuthUsers
